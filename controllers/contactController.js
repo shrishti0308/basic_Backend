@@ -1,11 +1,17 @@
 const asyncHandler = require("express-async-handler");
 const Contact = require("../models/contactModel");
 
+//@desc get all user
+//@route GET/api/contact
+//@access Public
 const getContacts = asyncHandler(async (req, res) => {
-  const contacts = await Contact.find();
+  const contacts = await Contact.find({ user_id: req.user.id });
   res.status(200).json(contacts);
 });
 
+//@desc create a user
+//@route POST /api/contact
+//@access Public
 const createContact = asyncHandler(async (req, res) => {
   console.log("The request body is:", req.body);
   const { name, email, phone } = req.body;
@@ -17,6 +23,9 @@ const createContact = asyncHandler(async (req, res) => {
   res.status(201).json(contact);
 });
 
+//@desc update a user
+//@route POST /api/contact/:id
+//@access private
 const updateContact = asyncHandler(async (req, res) => {
   const contact = await Contact.findById(req.params.id);
   if (!contact) {
@@ -35,6 +44,9 @@ const updateContact = asyncHandler(async (req, res) => {
   res.status(200).json(updateContact);
 });
 
+//@desc delete a user
+//@route POST /api/contact/:id
+//@access private
 const deleteContact = asyncHandler(async (req, res) => {
   const contact = await Contact.findById(req.params.id);
   if (!contact) {
@@ -45,6 +57,9 @@ const deleteContact = asyncHandler(async (req, res) => {
   res.status(200).json(contact);
 });
 
+//@desc get a user
+//@route GET /api/contact/:id
+//@access private
 const getContact = asyncHandler(async (req, res) => {
   const contact = await Contact.findById(req.params.id);
   if (!contact) {
