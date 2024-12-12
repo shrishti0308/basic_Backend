@@ -19,7 +19,12 @@ const createContact = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("All fields are mandatory");
   }
-  const contact = await Contact.create({ name, email, phone });
+  const contact = await Contact.create({
+    name,
+    email,
+    phone,
+    user_id: req.user.id,
+  });
   res.status(201).json(contact);
 });
 
@@ -32,7 +37,10 @@ const updateContact = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("Contact not found");
   }
-
+  if (contact.user_id.toString() !== req.user.id) {
+    res.status(403);
+    throw new Error("You are not authorized to update this contact");
+  }
   const updateContact = await Contact.findByIdAndUpdate(
     req.params.id,
     req.body,
@@ -52,6 +60,10 @@ const deleteContact = asyncHandler(async (req, res) => {
   if (!contact) {
     res.status(404);
     throw new Error("Contact not found");
+  }
+  if (contact.user_id.toString() !== req.user.id) {
+    res.status(403);
+    throw new Error("You are not authorized to delete this contact");
   }
   const deletedContact = await Contact.findByIdAndDelete(req.params.id);
   res.status(200).json(contact);
